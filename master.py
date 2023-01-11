@@ -1,5 +1,6 @@
 import socket
 import _thread
+from multicast_dns import *
 
 def client_thread(cs, addr):
     while True:
@@ -16,9 +17,12 @@ def server_program():
 
     # get the hostname
     host = socket.gethostname()
+    ip = socket.gethostbyname(host)
     port = 5000  # initiate port no above 1024
 
-    s.bind((host, port))
+    advertise_dns(socket.gethostbyname(host))
+
+    s.bind((ip, port))
 
     s.listen(5)
     while True:

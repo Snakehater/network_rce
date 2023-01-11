@@ -1,12 +1,14 @@
 import socket
+from multicast_dns import *
 
 
 def client_program():
-    host = socket.gethostname()  # as both code is running on same pc
+    ip = listen_dns()
+
     port = 5000  # socket server port number
 
     client_socket = socket.socket()  # instantiate
-    client_socket.connect((host, port))  # connect to the server
+    client_socket.connect((ip, port))  # connect to the server
 
     message = input(" -> ")  # take input
 
