@@ -1,7 +1,6 @@
 import socket
 from multicast_dns import *
 
-
 def client_program():
     ip = listen_dns()
 
