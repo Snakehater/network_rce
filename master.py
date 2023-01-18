@@ -1,6 +1,21 @@
 import socket
 import _thread
 from multicast_dns import *
+import json
+
+clients_file = "clients.json"
+clients_json = {}
+clients = []
+
+def save_json():
+    global clients_json
+    with open(clients_file, "w") as of:
+        of.write(json.dumps(clients_json, indent=4))
+
+def open_json():
+    global clients_json
+    with open(clients_file, "r") as infi:
+        clients_json = json.load(infi)
 
 class Client:
     name = None
@@ -9,8 +24,6 @@ class Client:
     def __init__(self, client_socket, ip_address_port):
         self.cs = client_socket
         self.ip_port = ip_address_port
-
-clients = []
 
 def client_thread(cs, addr):
     while True:
@@ -30,6 +43,8 @@ def accept_clients(s, hostname, host_ip):
         cs, addr = s.accept()
         _thread.start_new_thread(client_thread, (cs, addr))
         clients.append(Client(cs, addr))
+        open_json()
+        clients[len(clients) - 1].name = clients_json[addr[0]]
 
 selected_client = -1
 
@@ -37,6 +52,8 @@ def server_program():
     global selected_client
     s = socket.socket()
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    open_json()
 
     # get the hostname
     host = socket.gethostname()
@@ -70,6 +87,8 @@ def server_program():
             for i in range(len(clients)):
                 if clients[i].ip_port[0] == r.split(" ")[1]:
                     clients[i].name = r.split(" ")[2]
+                    clients_json[clients[i].ip_port[0]] = clients[i].name
+                    save_json()
 
         if r.startswith("select"):
             for i in range(len(clients)):
@@ -83,8 +102,7 @@ def server_program():
             else:
                 clients[selected_client].cs.send(bytes(r[2:], "utf-8"))
 
-                
-
+    save_json()
     s.close()  # close the connection
 
 
