@@ -27,11 +27,11 @@ class Client:
 
 def client_thread(cs, addr):
     while True:
-        msg = cs.recv(1024)
-        if msg == bytes("exit", "utf-8"):
+        msg = cs.recv(1024).decode()
+        if msg == "exit" or msg == "":
             break
-        print(addr, " >> ", msg)
-        cs.send(bytes("OK", "utf-8"))
+        print(addr, ":")
+        print(msg.replace("\\n", '\n'))
     cs.close()
     for i in range(len(clients)):
         if (addr[0] == clients[i].ip_port[0]):
