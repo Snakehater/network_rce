@@ -44,7 +44,10 @@ def accept_clients(s, hostname, host_ip):
         _thread.start_new_thread(client_thread, (cs, addr))
         clients.append(Client(cs, addr))
         open_json()
-        clients[len(clients) - 1].name = clients_json[addr[0]]
+        try:
+            clients[len(clients) - 1].name = clients_json[addr[0]]
+        except:
+            pass
 
 selected_client = -1
 
