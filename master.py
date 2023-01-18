@@ -60,6 +60,8 @@ def server_program():
                     print("No clients are connected")
                 for client in clients:
                     print(client.ip_port, " -> ", client.name)
+            case "ping":
+                advertise_dns(socket.gethostbyname(host))
 
         if r.startswith("name"):
             if len(r.split(" ")) != 3:
