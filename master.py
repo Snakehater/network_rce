@@ -36,6 +36,7 @@ selected_client = -1
 def server_program():
     global selected_client
     s = socket.socket()
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     # get the hostname
     host = socket.gethostname()
