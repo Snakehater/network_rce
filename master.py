@@ -27,7 +27,7 @@ class Client:
 
 def client_thread(cs, addr):
     while True:
-        msg = cs.recv(1024).decode()
+        msg = cs.recv(1024).decode('iso-8859-1')
         if msg == "exit" or msg == "":
             break
         print(addr, ":")
