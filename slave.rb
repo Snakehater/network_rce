@@ -18,11 +18,14 @@ while running do # retry connection
     TCPSocket.open(ip, 5000) do |s|
       while true do # wait for messages
         c = s.recv(1024)
-        if c == "stop" or c == "" then
+        if c == "stop" then
           s.write("Closing connection")
           sleep 2
           s.close
           running = false
+          break
+        elsif c == "" then
+          s.close
           break
         else
           begin
@@ -53,7 +56,6 @@ while running do # retry connection
 
       Timeout.timeout(5) do 
         ip, info = s.recvfrom(1024)
-        puts "MSG: #{msg} from #{info[2]} (#{info[3]})/#{info[1]} len #{msg.size}"
       end
     rescue
 
